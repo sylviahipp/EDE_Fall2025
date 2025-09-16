@@ -76,7 +76,7 @@ library(tidyverse)
 
 Question: What happens in the console when you load a package?
 
-> Answer: 
+> Answer: It outputs any conflicts the package might have with other packages already loaded.
 
 ---
 
@@ -143,11 +143,19 @@ Summarizing the above, your scripts should typically begin with the following th
 Prior to running this, reset your workspace (Session->Restart R) to ensure it runs ok as is, with no reliance on previous code run.
 
 ```{r Setup}
+# typically include this chuck together at top of script
+
 # Load packages
+library(tidyverse)
+library(ggplot2)
+library(here)
 
 # Confirm working directory
+here()
 
 # Load the USGS flow data into a data frame
+USGS.flow.data <- read.csv(here('Data/Raw/USGS_Site02085000_Flow_Raw.csv'), 
+                           stringsAsFactors = TRUE)
 
 ```
 
@@ -160,7 +168,7 @@ Prior to analyzing your dataset, take a moment to understand your data. Where di
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
 
-> ANSWER: 
+> ANSWER: README file is found under Data/Metadata within the home directory. Includes context for the data collection and information about from where and when the data was retrieved. Also includes information on the fields included in the dataset.  
 
 ### Examine properties of your dataset
 Next, have a look at your dataset. Browse your data in RStudio's viewer. Have a look at the structure of your data. Consider renaming columns. 
@@ -180,7 +188,8 @@ colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",
                               "gage.height.max", "gage.height.max.approval", 
                               "gage.height.min", "gage.height.min.approval", 
                               "gage.height.mean", "gage.height.mean.approval")
-str(USGS.flow.data)
+str(USGS.flow.data)  # structure
+glimpse(USGS.flow.data)
 dim(USGS.flow.data)
 length(USGS.flow.data)
 
@@ -198,7 +207,7 @@ summary(USGS.flow.data)  #could point to column only with $
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> Answer: 
+> Answer: Some were read in as NAs, others were read in as blanks. The blanks represent missing data in factor fields.
 
 ### Identify and address issues: Missing Data
 
@@ -217,6 +226,7 @@ USGS.flow.data.complete <- na.omit(USGS.flow.data)
 dim(USGS.flow.data)
 dim(USGS.flow.data.complete)
 
+mean(USGS.flow.data$discharge.mean)  # will return NA if any NA values are included
 mean(USGS.flow.data.complete$discharge.mean)
 sd(USGS.flow.data.complete$discharge.mean)
 summary(USGS.flow.data.complete$discharge.mean)
@@ -247,7 +257,10 @@ Alternatively, we can tell R to import it as a factor when we read the data in
 ```{r}
 USGS.flow.data2  <- read.csv(
   file = here("./Data/Raw/USGS_Site02085000_Flow_Raw.csv"),
-  stringsAsFactors = TRUE) 
+  stringsAsFactors = TRUE, 
+  colClasses = c("site_no" = "factor")) 
+
+str(USGS.flow.data2)
 ```
 
 
@@ -277,11 +290,12 @@ help(as.Date)
 # (code must be uncommented)
 today <- Sys.Date()
 format(today, format = "%B")
-#format(today, format = "")
-#format(today, format = "")
-#format(today, format = "")
+format(today, format = "%b")
+format(today, format = "%m-%d")
+format(today, format = "%B %d, %Y")
 
 USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") 
+str(USGS.flow.data)
 ```
 
 Note that for every date prior to 1969, R has assigned the date in the 2000s rather than the 1900s. This can be fixed with an `ifelse` statement inside a function. Run through the code below and write what is happening in the comment above each line.
@@ -292,7 +306,7 @@ USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
 
 #
 create.early.dates <- (function(d) {
-       paste0(ifelse(d > 191226,"19","20"),d)
+       paste0(ifelse(d > 191226,"19","20"),d)  # if year is between 00 and 19, assign to 2000, otherwise 1900
        })
 #
 USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
