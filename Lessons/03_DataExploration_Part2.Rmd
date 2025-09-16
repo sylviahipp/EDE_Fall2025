@@ -3,6 +3,8 @@ title: "3: Data Exploration"
 author: "Environmental Data Analytics | John Fay & Luana Lima"
 date: "Fall 2025"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Lesson Objectives
@@ -16,7 +18,7 @@ output: pdf_document
 
 Why is data exploration our first step in analyzing a dataset? What information do we gain? How does data exploration aid in our decision-making for data analysis steps further down the pipeline?
 
->Answer: 
+>Answer: Data exploration is important to have a clear picture of your data (both the information it contains and any potential limits or biases) so that you can use that context when going into analysis. You want to be aware of limits in the data so you don't make any overstatements when relying on it. 
 
 ---
 
@@ -25,22 +27,34 @@ Why is data exploration our first step in analyzing a dataset? What information 
 ```{r, Setup-Import-Explore, message = FALSE}
 ## -Set up-
 # 1. Load packages (tidyverse, here)
+library(tidyverse)
+library(here)
 
 # 2. Check the working directory
+getwd()
+here()
 
 # 3. Import datasets
+USGS.flow.data <- read.csv(here('Data/Processed/USGS_Site02085000_Flow_Processed.csv'), 
+                           stringsAsFactors = TRUE, 
+                           colClasses = c("site_no" = "factor", 
+                                          "datetime" = "Date"))
 
 ## -Initial Exploration-
 
-#View(USGS.flow.data)
+#View(USGS.flow.data)  # this is commented out b/c otherwise you couldn't knit
 # Alternate option: click on data frame in Environment tab
 
 #View column names and the structure of the dataset
+colnames(USGS.flow.data)
+str(USGS.flow.data)
 
 # Check our date column: is it a date object?
+class(USGS.flow.data$datetime)  # imported it as a Date object
 
 # Change it to a date object and confirm
-
+# or could have done: 
+# USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y-%m-%d")
 
 ```
 
@@ -57,7 +71,11 @@ Visualize count data for categorical variables.
 
 ```{r, fig.height = 3, fig.width = 4}
 ggplot(data = USGS.flow.data, aes(x = discharge.mean.approval)) +
-  geom_bar()
+  geom_bar()  # useful for categorical
+
+# can call levels(USGS.flow.data$discharge.mean.approval) to get possible levels of the factor
+# represents whether these values have been approved or not according to Metadata
+# Conclusion: Most of the observations have been approved; some missing data
 ```
 
 ### Histogram (function: geom_histogram)
@@ -83,7 +101,7 @@ ggplot(USGS.flow.data, aes(x = discharge.mean)) +
   
 # 
 ggplot(USGS.flow.data) +
-  geom_histogram(aes(x = gage.height.mean))
+  geom_histogram(aes(x = gage.height.mean))  # can put aes() in ggplot() or geom
 
 ```
 
@@ -96,14 +114,17 @@ An alternate to a histogram is a frequency polygon graph (distributions of value
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean), bins = 50) +
   geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "darkgray") +
-  geom_freqpoly(aes(x = gage.height.max), bins = 50,  lty = 2) +
+  geom_freqpoly(aes(x = gage.height.max), bins = 50,  linetype = 2) +     # linetype argument can also be lty
   scale_x_continuous(limits = c(0, 10))
+
+# this plot is showing counts -- reason why we see mean higher than max
+# indicates that more observations have non-zero mean than max
 
 #
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean, color = gage.height.mean.approval), bins = 50) +
   scale_x_continuous(limits = c(0, 10)) +
-  theme(legend.position = "top")
+  theme(legend.position = "bottom")  # can set position "top" "left" "right" etc.
 
 ```
 
@@ -125,10 +146,13 @@ An alternate option is a violin plot, which displays density distributions, some
 #
 ggplot(USGS.flow.data) +
   geom_boxplot(aes(x = gage.height.mean.approval, y = gage.height.mean))
+# separate plots for different approval categories
 
 #
 ggplot(USGS.flow.data) +
-  geom_boxplot(aes(x = gage.height.mean, y = discharge.mean, group = cut_width(gage.height.mean, 1)))
+  geom_boxplot(aes(x = gage.height.mean, 
+                   y = discharge.mean, 
+                   group = cut_width(gage.height.mean, 1)))
 
 #
 ggplot(USGS.flow.data) +
@@ -149,11 +173,11 @@ ggplot(USGS.flow.data) +
 
 Question: under what circumstances would it be beneficial to use each of these graph types (bar plot, histogram, frequency polygon, box-and whisker, violin, scatterplot)?
 
-> Answer: 
+> Answer: bar plot shows distribution of categorical variable; histogram shows distribution of continuous variable. These are only useful if looking at one variable at a time. Frequency polygon shows the same as histogram, but can be useful if wanting to view distribution of several continuous variables on the same scale at one time. Box-and-whisker / violin plots both show distribution and outliers of a continuous variable, and can also be useful to see how this distribution varies in relation to another variable that you can input as your x aesthetic. Scatter plots are useful for time series or for looking at the correlation between two varibles in the data. 
 
 ## Ending discussion
 What did you learn about the USGS discharge dataset today? What separate insights did the different graph types offer?
-> Answer: 
+> Answer: I learned that there's a lot of missing data. 
 
 
 How can multiple options for data exploration inform our understanding of our data?
