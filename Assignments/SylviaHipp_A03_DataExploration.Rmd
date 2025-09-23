@@ -16,7 +16,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Rename this file `<FirstLast>_A03_DataExploration.Rmd` (replacing `<FirstLast>` with your first and last name).
 2.  Change "Student Name" on line 3 (above) with your name.
-3.  Work through the steps, **creating code and output** that fulfill each instruction. 
+3.  Work through the steps, **creating code and output** that fulfill each instruction.
 4.  Assign a useful **name to each code chunk** and include ample **comments** with your code.
 5.  Be sure to **answer the questions** in this assignment document.
 6.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
@@ -24,9 +24,9 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 **TIP**: If your code extends past the page when knit, tidy your code by manually inserting line breaks.
 
-**TIP**: If your code fails to knit, check that no `install.packages()` or `View()` commands exist in your code. 
+**TIP**: If your code fails to knit, check that no `install.packages()` or `View()` commands exist in your code.
 
----
+------------------------------------------------------------------------
 
 ## Set up your R session
 
@@ -55,19 +55,21 @@ litter <- read.csv(
 
 2.  The neonicotinoid dataset was collected from the Environmental Protection Agency's ECOTOX Knowledgebase, a database for ecotoxicology research. Neonicotinoids are a class of insecticides used widely in agriculture. The dataset that has been pulled includes all studies published on insects. Why might we be interested in the ecotoxicology of neonicotinoids on insects? Feel free to do a brief internet search if you feel you need more background information.
 
-> Answer: As an insecticide, neonicotinoids are highly toxic to all insects, including pests to crops as well as  beneficial insects like pest preditors and pollinators. Studying the ecotoxicology of neonicotinoids is important to understand their impact on beneficial insect populations, particularly pollinators. Harming pollinator populations affects their abillity to pollinate plants, and as a result has a reverberating affect on the rest of the food chain.
-Source: https://www.nrdc.org/stories/neonicotinoids-101-effects-humans-and-bees
+> Answer: As an insecticide, neonicotinoids are highly toxic to all insects, including both pests and beneficial insects like pest preditors and pollinators. Studying the ecotoxicology of neonicotinoids is important to understand their impact on beneficial insect populations, particularly pollinators. Harming pollinator populations affects their abillity to pollinate plants, and as a result has a reverberating affect on the rest of the food chain. Source: <https://www.nrdc.org/stories/neonicotinoids-101-effects-humans-and-bees>
 
 3.  The Niwot Ridge litter and woody debris dataset was collected from the National Ecological Observatory Network, which collectively includes 81 aquatic and terrestrial sites across 20 ecoclimatic domains. 32 of these sites sample forest litter and woody debris, and we will focus on the Niwot Ridge long-term ecological research (LTER) station in Colorado. Why might we be interested in studying litter and woody debris that falls to the ground in forests? Feel free to do a brief internet search if you feel you need more background information.
 
-> Answer: Woody debris is beneficial to forests as it provides food and shelter to organisms, which promotes biodiversity and health of the ecosystem. Decomposing woody debris is also important to return nutrients back into the soil. Conversely, litter can be harmful to forest ecosystems as it can contaminate the soil and water sources (among other reasons), causing potentially harmful toxins to enter the food chain. Studying litter and woody debris in forests is important as both may be an indicator of the overall health of the forest and inform any action needed to improve it.
+> Answer: Plant litter and woody debris are beneficial to forests and necessary for normal forest functioning. Woody debris provides food and shelter to organisms, which promotes biodiversity and health of the ecosystem. Decomposing woody debris is also important to return nutrients back into the soil. Plant litter is fresh and undecomposed plant debris, such as pine needles, leaves, seeds, or acorns. Plant litter is also necessary for the health of a forest as it protects soil from erosion and wildfire damage and its nutrients may also be recycled back into the ecosystem as it decomposes. Studying litter and woody debris in forests is important as they may indicate the overall health of the forest and inform any action needed to improve it. Source: <https://en.wikipedia.org/wiki/Plant_litter>
 
 4.  How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here:
 
-> Answer: 
- 1.
- 2.
- 3. 
+> Answer:
+>
+> 1.  Litter is collected from elevated traps and fine woody debris is collected from ground traps. Woody debris is larger than litter and cannot be reliably collected in elevated traps.
+>
+> 2.  Trap placement within plots of land is either targeted or randomized, depending on the vegetation. In areas with higher aerial coverage of woody vegetation, the traps are placed randomly.
+>
+> 3.  Ground traps are sampled once a year. The frequency of sampling of elevated traps varies depending on the vegetation: they are sampled more frequently in deciduous forests in the fall, and less frequently year-round in evergreen forests.
 
 ## Obtain basic summaries of your data (Neonics)
 
@@ -86,27 +88,26 @@ summary(neonics$Effect) %>% sort(decreasing = TRUE)
 
 ```
 
-> Answer: The top three effects studied are Population, Mortality, and Behavior. Population and mortality may be of particular interest because these studies would inform how neonicotinoids have an overall effect on insect populations in a particular area. Behavior would also be of interest because even in cases where the neonicotinoids do not have a fatal effect, they may alter insect behavior severely enough to have an equally harmful impact on the population and environment.
-
+> Answer: The top three effects studied are Population, Mortality, and Behavior. Population and mortality may be of particular interest because these studies would inform how neonicotinoids have an overall effect on insect populations in a particular area. Behavior would also be of interest because it would inform how neonicotinoids impact insects at an individual level. For instance, in cases where the neonicotinoids do not have a fatal effect, they may alter insect behavior severely enough that the insects are unable to reproduce or pollinate, such that it has an equally harmful impact on the population and environment.
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
 
 ```{r Q7}
-summary(neonics$Species.Common.Name, maxsum = 7) %>% sort(decreasing = TRUE)
+summary(neonics$Species.Common.Name, maxsum = 7) %>% sort(decreasing = TRUE) 
 
 ```
 
-> Answer: The six most commonly studied species in the dataset are the honey bee, parasitic wasp, buff tailed bumblebee, carniolan honey bee, bumble bee, and italian honey bee. Each of these insects are pollinators, which are particularly important to study because they have a major impact on the ecosystem and food web as a whole.  
+> Answer: The six most commonly studied species in the dataset (excluding 'Other') are the honey bee, parasitic wasp, buff tailed bumblebee, carniolan honey bee, bumble bee, and italian honey bee. Each of these insects are pollinators, which are important to study because they are necessary for the reproduction of many plants and thus have a major impact on the ecosystem and food web. Some plants and pollinators have exclusive relationships, meaning the loss of a pollinator population would have a detrimental impact on the plant population as well.
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric? [Tip: Viewing the dataframe may be helpful...]
 
 ```{r Q8}
 class(neonics$Conc.1..Author.)
-neonics %>% distinct(Conc.1..Author.)
+neonics %>% distinct(Conc.1..Author.) %>% arrange(Conc.1..Author.) %>% head(n = 30)
 
 ```
 
-> Answer: This field is not numeric even though the values are mostly numbers because some observations include non-numeric characters, such as >=, >, or ~. These non-numeric characters are useful to convey that the recorded concentration may not be an exact/certain value. 
+> Answer: This field is not numeric even though the majority of values are numbers because some observations include non-numeric characters, such as \>=, \>, or \~. These non-numeric characters are useful to convey that the recorded concentration may represent a range or uncertain value.
 
 ## Explore your data graphically (Neonics)
 
@@ -129,9 +130,9 @@ ggplot(neonics) +
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer: The most common test locations are lab and natural field. While the vast majority of studies today are done in a lab, lab studies were not very common until around 2010. Natural field studies were more popular prior to lab studies. 
+> Answer: The most common test locations are lab and natural field. While the majority of studies done more recently occur in a lab, lab studies were not very common until around 2010. Natural field studies were more popular prior to lab studies.
 
-11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
+11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information.
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
@@ -140,19 +141,19 @@ ggplot(neonics %>% group_by(Endpoint) %>% mutate(n = n()) %>% ungroup(),
        aes(reorder(Endpoint, -n))) + 
   geom_bar() + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
-  labs(x = "Endpoint", 
-       y = "Count")
+  labs(x = "Endpoint")
 
 ```
 
-> Answer: The two most common endpoints are NOEL and LOEL. NOEL, or no-observable-effect-level, refers to the highest dose/concentration of the toxin that produces effects that are not significantly different than the response of the control. LOEL, or 'lowest-observable-effect-level, is the lowest dose/concentration of the toxin that produces effects that are significantly different than the response of the control. 
+> Answer: The two most common endpoints are NOEL and LOEL. NOEL, or no-observable-effect-level, refers to the highest dose/concentration of the toxin that produces effects that are not significantly different than the response of the control. In other words, this is the highest dose that produces no significant effect. LOEL, or 'lowest-observable-effect-level, is the lowest dose/concentration of the toxin that produces effects that are significantly different than the response of the control. In other words, this is the lowest dose required to produce a significant effect.
 
 ## Explore your data (Litter)
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
 ```{r Q12}
-class(litter$collectDate)  # character
+class(litter$collectDate)  # factor
+unique(litter$collectDate)
 litter$collectDate <- ymd(litter$collectDate)
 unique(litter$collectDate)
 
@@ -166,7 +167,7 @@ summary(litter$plotID)
 
 ```
 
-> Answer: Both summary() and unique() give the values of plotID that appear in the dataset. Summary() is different because it also gives a count of the number of times each value appears. Unique() is different in that it also gives all levels of the factor. 
+> Answer: Both summary() and unique() give the values of plotID that appear in the dataset. Summary() is different because it also gives a count of the number of times each value appears. Unique() is different in that it also gives all levels of the factor. The output of summary() is ordered.
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
@@ -193,8 +194,8 @@ plot_base + geom_violin()
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer: A violin plot is similar to a box plot except it also shows the frequency of potential values along the distribution. In this case, a violin plot is not an effective visual because within one functional group, the dryMass values appear to be distributed evenly across the range of possible values (i.e., there is no region that is particularly dense). As a result, the violin plots appear as a straight line with no dimension, which is uninformative as you also can't see information like median / quartiles that appear in the box plot. 
+> Answer: A violin plot is similar to a box plot except it also shows the frequency of potential values along the distribution. In this case, a violin plot is not an effective visual because within one functional group, the dryMass values appear to be distributed evenly across the range of possible values (i.e., there is no region that is particularly dense). As a result, the violin plots appear as a straight line with no dimension, which is uninformative as you also can't see information like median / quartiles that appear in the box plot. This could also be due to having few observations for each Functional Group.
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:
+> Answer: Needles tend to have the highest biomass at these sites.
