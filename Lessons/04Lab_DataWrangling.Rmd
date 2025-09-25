@@ -43,6 +43,7 @@ glimpse(NTL.phys.data$sampledate)
 
 # Change sampledate values into date objects
 NTL.phys.data$sampledate <- mdy(NTL.phys.data$sampledate)
+#head(NTL.phys.data$sampledate)
 ```
 
 ---
@@ -68,8 +69,8 @@ NTL.phys.data.surface <- filter(NTL.phys.data, depth == 0)
 
 # Choose multiple conditions to filter
 summary(NTL.phys.data$lakename)
-NTL.phys.data.PeterPaul <- 
-  filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))
+NTL.phys.data.PeterPaul <- NTL.phys.data %>%  
+  filter(lakename %in% c("Paul Lake", "Peter Lake"))
 
 # Choose a range of conditions of a numeric or integer variable
 summary(NTL.phys.data$daynum)
@@ -80,11 +81,15 @@ NTL.phys.data.JunethruOctober <- filter(NTL.phys.data, daynum %in% c(152:304))
 # Exercise 1: 
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
-
+class(NTL.phys.data$sampledate)
+NTL.phys.data.1999 <- NTL.phys.data %>% 
+  filter(year(sampledate) == 1999)
 
 # Exercise 2: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+NTL.phys.data.Tuesday.1990s <- NTL.phys.data %>% 
+  filter(year(sampledate) %in% c(1990:1999), 
+         lakename == "Tuesday Lake")
 
 ```
 Question: Why don't we filter using row numbers?
