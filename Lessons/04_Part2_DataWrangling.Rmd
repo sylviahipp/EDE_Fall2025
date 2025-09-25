@@ -104,7 +104,7 @@ NTL.nutrient.data.PeterPaul.spread2 <- pivot_wider(NTL.nutrient.data.PeterPaul.g
 
 # Split components of cells into multiple columns
 # Opposite of 'separate' is 'unite'
-NTL.nutrient.data.PeterPaul.dates <- separate(NTL.nutrient.data.PeterPaul.subset, sampledate, c("Y", "m", "d"))
+NTL.nutrient.data.PeterPaul.dates <- separate(NTL.nutrient.data.PeterPaul.subset, sampledate, c("year", "month", "day"))
 
 # I recommend using lubridate rather than separate and unite.
 
@@ -154,6 +154,10 @@ LitterFiles
 
 Litter <- LitterFiles %>%
   plyr::ldply(read.csv)
+
+# Alternative way to do this using purrr
+# Litter2 <- LitterFiles %>% 
+#   map_dfr(read.csv)
 ```
 
 We also have information about individual traps, including the location and type of landcover. Let's join these two datasets. Note that "siteID", "plotID" and "trapID" exist in both datasets, and we can join them by these conditions. Notice the dimensions of the final dataset.
