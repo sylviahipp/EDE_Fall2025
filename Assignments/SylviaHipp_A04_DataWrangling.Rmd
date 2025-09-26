@@ -29,7 +29,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 library(tidyverse)
 library(lubridate)
 library(here)
-library(janitor)  # import to clean up column names
+library(janitor)  # add janitor to clean column names for convenience
 ```
 
 
@@ -84,21 +84,41 @@ All four datasets should have the same number of columns but unique record count
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r questions 3 thru 4}
-#3
-glimpse(EPAair_O3_NC2018_raw)  # date is a character in format month/date/year
 
-EPAair_O3_NC2018_raw$date <- mdy(EPAair_O3_NC2018_raw$date)
-EPAair_O3_NC2019_raw
-EPAair_PM25_NC2018_raw
-EPAair_PM25_NC2019_raw
+# I created a function to process each dataframe to make my code more succinct 
+process_df <- function(df, file_name, type=""){
+  
+  processed_df <- df %>% 
+    # 3: change date cols
+    mutate(date = mdy(date)) %>% 
+    # 4: select appropriate columns
+    select(date, daily_aqi_value, site_name, aqs_parameter_desc, county, 
+           site_latitude, site_longitude)
+  
+    # 5: fill all cells equal to PM2.5
+  if(type == "PM25"){
+    processed_df <- processed_df %>% 
+      mutate(aqs_parameter_desc = "PM2.5")
+  }
+  
+  # 6: write to processed folder
+  write.csv(processed_df, 
+            file = str_c(here("Data/Processed/"), file_name, ".csv"))
+  
+  return(processed_df)
+}
 
-#4
-
-
-#5
-
-
-#6
+# 6: call function to process datasets and save to processed folder
+EPAair_O3_NC2018_processed <- process_df(EPAair_O3_NC2018_raw, 
+                                         "EPAair_O3_NC2018_processed")
+EPAair_O3_NC2019_processed <- process_df(EPAair_O3_NC2019_raw, 
+                                         "EPAair_O3_NC2019_processed")
+EPAair_PM25_NC2018_processed <- process_df(EPAair_PM25_NC2018_raw, 
+                                           "EPAair_PM25_NC2018_processed", 
+                                           type = "PM25")
+EPAair_PM25_NC2019_processed <- process_df(EPAair_PM25_NC2019_raw, 
+                                           "EPAair_PM25_NC2019_processed", 
+                                           type = "PM25")
 
 ```
 
@@ -132,19 +152,53 @@ EPAair_PM25_NC2019_raw
 
 ```{r questions 7 thru 11}
 #7 
+# Check columns are the same
+glimpse(EPAair_O3_NC2018_processed)
+glimpse(EPAair_O3_NC2019_processed) 
+glimpse(EPAair_PM25_NC2018_processed)
+glimpse(EPAair_PM25_NC2019_processed)
 
+EPAair_df_stacked <- rbind(EPAair_O3_NC2018_processed,
+                           EPAair_O3_NC2019_processed, 
+                           EPAair_PM25_NC2018_processed, 
+                           EPAair_PM25_NC2019_processed)
 
 #8 
+# Wrangle dataset
+# get which sites are common across all datasets
+common_sites <- intersect(levels(EPAair_O3_NC2018_processed$site_name),
+                          levels(EPAair_O3_NC2019_processed$site_name)) %>% 
+  intersect(levels(EPAair_PM25_NC2018_processed$site_name)) %>% 
+  intersect(levels(EPAair_PM25_NC2019_processed$site_name)) %>%
+  str_subset(".+")
+  
 
+EPAair_df_processed <- EPAair_df_stacked %>% 
+  filter(site_name %in% common_sites) %>% 
+  group_by(date, site_name, aqs_parameter_desc, county) %>% 
+  summarize(avg_aqi_value = mean(daily_aqi_value), 
+            avg_latitude = mean(site_latitude), 
+            avg_longitude = mean(site_longitude)) %>% 
+  ungroup() %>% 
+  mutate(year = year(date), 
+         month = month(date)) 
 
 #9
-
+# pivot the dataset wide so air quality values for ozone and PM2.5 are separate
+EPAair_df_processed_wide <- EPAair_df_processed %>% 
+  pivot_wider(id_cols = c("date", "year", "month", "site_name", "county", 
+                          "avg_latitude", "avg_longitude"), 
+              names_from = "aqs_parameter_desc",
+              names_prefix = "aqi_value_",
+              values_from = "avg_aqi_value") 
 
 #10
-
+# call up dimensions
+dim(EPAair_df_processed_wide)   # 8976 rows x 9 columns 
 
 #11
-
+write.csv(EPAair_df_processed_wide, 
+          file = here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"))
 
 ```
 
@@ -158,15 +212,20 @@ EPAair_PM25_NC2019_raw
 ```{r questions 12 and 13}
 
 #12
-
+EPAair_df_summary <- EPAair_df_processed_wide %>% 
+  group_by(month, year, site_name) %>% 
+  summarize(avg_aqi_PM2.5 = mean(aqi_value_PM2.5), 
+            avg_aqi_ozone = mean(aqi_value_Ozone)) %>% 
+  ungroup() %>% 
+  drop_na(avg_aqi_ozone)
 
 #13
-
+dim(EPAair_df_summary)   # 182 rows x 5 columns
 
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
-> Answer: 
+> Answer: drop_na only drops rows where the column given (e.g., avg_aqi_ozone) is NA and keeps observations where other columns are NA. Meanwhile na.omit drops all observations where any column is NA, so we lose observations with important data. 
 
