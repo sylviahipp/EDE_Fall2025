@@ -15,21 +15,29 @@ editor_options:
 ## SET UP YOUR DATA ANALYSIS SESSION
 
 ```{r, message = FALSE, warning = FALSE}
+#install.packages("colormap")
 library(tidyverse); library(lubridate); library(here);
 here()
 
 PeterPaul.chem.nutrients <- 
-  read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
            stringsAsFactors = T)
 PeterPaul.chem.nutrients.gathered <-
-  read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv"),
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv"),
            stringsAsFactors = T)
-EPAair <- read.csv(here("Data/Processed_KEY/EPAair_O3_PM25_NC1819_Processed.csv"),
+EPAair_import <- read.csv(here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"),
                    stringsAsFactors = T)
 
-EPAair$Date <- ymd(EPAair$Date)
+EPAair_import$date <- ymd(EPAair_import$date)
 PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
 PeterPaul.chem.nutrients.gathered$sampledate <- ymd(PeterPaul.chem.nutrients.gathered$sampledate)
+
+# rename some col names to match the key
+EPAair <- EPAair_import %>% 
+  rename("Date" = date, 
+         "Ozone" = aqi_value_Ozone, 
+         "PM2.5" = aqi_value_PM2.5)
+
 ```
 
 
@@ -234,7 +242,9 @@ The following graph displays the counts of specific endpoints measured in neonic
 ```{r}
 Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 ggplot(Neonics) +
-  geom_bar(aes(x = Endpoint))
+  geom_bar(aes(x = reorder(x = Endpoint, X = Reference.Number, FUN = length))) + 
+  scale_x_discrete(limits = rev(levels(Neonics$Endpoint))) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
 
 

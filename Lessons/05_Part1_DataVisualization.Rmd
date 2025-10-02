@@ -25,12 +25,15 @@ library(ggridges)
 here()
 
 PeterPaul.chem.nutrients <- 
-  read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
+           stringsAsFactors = TRUE)
 PeterPaul.chem.nutrients.gathered <-
-  read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv"), stringsAsFactors = TRUE)
-EPAair <- read.csv(here("Data/Processed_KEY/EPAair_O3_PM25_NC1819_Processed.csv"), stringsAsFactors = TRUE)
+  read.csv(here("Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv"),
+           stringsAsFactors = TRUE)
+EPAair_import <- read.csv(here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"), 
+                          stringsAsFactors = TRUE)
 
-EPAair$Date <- ymd(EPAair$Date)
+EPAair_import$date <- ymd(EPAair_import$date)
 PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
 PeterPaul.chem.nutrients.gathered$sampledate <- ymd(PeterPaul.chem.nutrients.gathered$sampledate)
 
@@ -77,6 +80,15 @@ Here are some commonly used aesthetic types that can be manipulated in ggplot:
 ### Plotting continuous variables over time: Scatterplot and Line Plot
 
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+# rename some cols to match the key
+EPAair <- EPAair_import %>% 
+  rename("Ozone" = aqi_value_Ozone, 
+         "Date" = date, 
+         "Year" = year, 
+         "Month" = month,
+         "Site.Name" = site_name, 
+         "PM2.5" = aqi_value_PM2.5)
+
 # Scatterplot
 ggplot(EPAair, aes(x = Date, y = Ozone)) + 
   geom_point()
@@ -87,13 +99,17 @@ print(O3plot)
 
 # Fix this code
 O3plot2 <- ggplot(EPAair) +
-  geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  # geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  # include constant aesthetics outside of aes()
+  geom_point(aes(x = Date, y = Ozone), color = "blue")  
 print(O3plot2)
 
 # Add additional variables
 # How could you automatically assign a marker color to a variable? 
 PMplot <- 
-  ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Year), color = Site.Name)) +
+  # make Year a factor so that it's categorical to assign shapes
+  ggplot(EPAair, aes(x = Month, y = PM2.5, 
+                     shape = as.factor(Year), color = Site.Name)) +
   geom_point()
 print(PMplot)
 
@@ -110,7 +126,7 @@ PMplot.faceted2 <-
                   Site.Name == "Bryson City"), 
          aes(x = Month, y = PM2.5)) + 
   geom_point() +
-  facet_grid(Site.Name ~ Year) 
+  facet_grid(Site.Name ~ Year)   # columns are years, rows are each site_name
 print(PMplot.faceted2)
 
 # Plot true time series with geom_line
