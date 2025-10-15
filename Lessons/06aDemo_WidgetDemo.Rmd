@@ -1,0 +1,19 @@
+---
+title: Interactive Rmd
+output: html_document
+runtime: shiny
+---
+  
+```{r, echo = FALSE}
+# this is a widget: way to interact with data
+# n is the name of the variable input (InputID) that you will reference later as input$n
+numericInput("n",
+"How many cars?", 5)
+
+# once you change  something in the widget, this code reacts
+renderTable({
+head(cars, input$n)
+  
+})
+```
+
