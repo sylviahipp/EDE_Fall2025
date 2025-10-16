@@ -4,6 +4,8 @@ subtitle: "ENV 859 - Environmental Data Exploration"
 author: "John Fay & Luana Lima"
 date: "Fall 2025"
 output:  ioslides_presentation 
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Learning Outcomes
@@ -86,6 +88,14 @@ output:  ioslides_presentation
 -   Global code chunk attributes\
     `knitr::opts_chunk$set(echo = TRUE)`
     
+```{r demo chunk, include=TRUE, echo = FALSE}
+
+x = 1
+y = 13
+print(x + y)
+```
+   
+    
 ## Code Chunks: Plots and Figures
 -   `fig.cap`: Set figure Caption
 -   `fig.width`, `fig.height`: Set figure size, or...
@@ -118,11 +128,29 @@ output:  ioslides_presentation
 -   `---`
 -   Using the *Visual Editor*!
 
+### Subheader
+> This is a block quote
+
+1. Step 1
+2. Step 2
+
+* first bullet
+* second bullet
+
 ## Pretty tables with `kable`
 -   Part of the `knitr` package
 -   Convert a dataframe to a markdown table\
     Makes for aethetic output
 -   Example...
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
+more content | more content 2
+
+[embed link](https://www.google.com)
+[image](img/rmarkdownflow.png)
 
 ## Exercises!
 -   Open `06b_Exercise_Markdown.Rmd` and knit as is

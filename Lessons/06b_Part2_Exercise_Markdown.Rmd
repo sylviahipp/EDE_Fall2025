@@ -3,13 +3,16 @@ title: "Exercise: Markdown"
 author: "Environmental Data Analytics | John Fay and Luana Lima "
 output: pdf_document
 geometry: margin=2.54cm
+toc: TRUE
 editor_options: 
   chunk_output_type: console
 ---
 
+\listoftables
+
 ## Set up the coding environment
 
-```{r setup}
+```{r setup, include = FALSE}
 #Load packages
 library(tidyverse);library(here);library(lubridate)
 
@@ -43,4 +46,16 @@ nutrient_data_tn <- nutrient_data %>%
   )
 ```
 
+The nutrient data has `r nrow(nutrient_data)` rows and `r ncol(nutrient_data)` columns
+
+\newpage
+
 ## Report the summary
+
+```{r}
+# want to show summary data as formatted table using kable
+knitr::kable(nutrient_data_tn, 
+             col.names = c("Lake Name", "Mean", "Min", "Max", "Standard Deviation"), 
+             caption = "Summary of Total Nitrogen")
+```
+

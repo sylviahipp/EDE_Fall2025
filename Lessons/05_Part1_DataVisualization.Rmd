@@ -4,9 +4,12 @@ author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by K
 date: "Fall 2025"
 output: pdf_document
 geometry: margin=2.54cm
+toc: TRUE
 editor_options: 
   chunk_output_type: console
 ---
+
+\listoffigures
 
 ## Objectives
 1. Perform simple data visualizations in the R package `ggplot`
