@@ -124,6 +124,10 @@ For example: What if we wanted to know how litter masses varied across functiona
 # Format as aov
 Litter.anova.2way <- aov(data = Litter, dryMass ~ functionalGroup + nlcdClass)
 summary(Litter.anova.2way)
+# reject null: means across the groups are different
+
+summary(Litter$functionalGroup) # 7 df
+summary(Litter$nlcdClass)       # 2 df
 
 # Format as lm
 Litter.anova.2way2 <- lm(data = Litter, dryMass ~ functionalGroup + nlcdClass)
@@ -157,6 +161,7 @@ If the interaction is significant, we interpret pairwise differences for the int
 # Run a post-hoc test for pairwise differences
 TukeyHSD(Litter.anova.2way3)
 
+# factor object with levels being 24 possible combinations, observation for each row in Litter 
 Litter.interaction <- with(Litter, interaction(functionalGroup, nlcdClass))
 
 #Litter.test <- cbind(Litter,Litter.interaction)
