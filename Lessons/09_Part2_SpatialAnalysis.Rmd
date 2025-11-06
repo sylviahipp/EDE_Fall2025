@@ -78,7 +78,7 @@ st_crs(epa_pm25_sites_sf)
 
 #Plot the data
 ggplot(data=epa_pm25_sites_sf) +
-  geom_sf()
+  geom_sf(aes(color = meanPM))
 ```
 
 ## 2.2 Reading shapefiles into R with `sf`
@@ -116,16 +116,19 @@ mapView(counties_sf)
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-huc8_sf <- 
+huc8_sf <- st_read(here('./Data/Spatial/NCHUC8.shp'))
 
 #Reveal the column names
+colnames(huc8_sf)
 
 
 #Check the CRS
+st_crs(huc8_sf)
 
 
 #View the data as a map, colored by the acreage in each
-
+ggplot(huc8_sf) + 
+  geom_sf(aes(fill = ACRES))
 
 ```
 
@@ -136,10 +139,13 @@ huc8_sf <-
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
+huc8_upper_neuse <- huc8_sf %>% 
+  filter(SUBBASIN == "Upper Neuse")
 
 #Create a map
-
+ggplot() + 
+  geom_sf(data = huc8_sf) + 
+  geom_sf(data = huc8_upper_neuse, fill = "yellow", color = "blue")
 
 ```
 
@@ -217,12 +223,20 @@ ggplot() +
 
 ```{r}
 #Import data, setting HUC_12 to be factors, and computing a HUC_8 column
-
+wind_df <- read_csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv') %>% 
+  mutate(huc8 = str_extract(HUC_12, "[0-9]{8}")) %>% 
+  group_by(huc8) %>% 
+  summarize(total_wind_energy = sum(AvgWindEnergy)) %>% 
+  ungroup()
   
 #Join to HUC_8 features
-
+wind_huc8_sf <- huc8_sf %>% 
+  left_join(wind_df, 
+            by = c("HUC_8" = "huc8"))
 
 #View the outputs
+ggplot(wind_huc8_sf) + 
+  geom_sf(aes(fill = total_wind_energy))
 
 
 ```
@@ -250,11 +264,13 @@ mapview(state_sf)
 
 
 #Summarize on DWQ Basin value
-huc2_sf <- 
+huc2_sf <- huc8_sf %>% 
+  group_by(DWQ_Basin) %>% 
+  summarize(ACRES = sum(ACRES))
   
 
 #Map the data
-
+mapview(huc2_sf, zcol = "ACRES")
 
 ```
 
@@ -337,11 +353,14 @@ triCo <- counties_sf_utm %>%
 
   
 #Grab the intersecting HUC_8s
+triangle_huc8 <- huc8_sf_utm %>% 
+  st_filter(triCo, .predicate = st_intersects)
 
-
+mapview(triCo) + mapview(triangle_huc8, alpha.regions = 0, color = "red")
 
 #Intersect the HUC_8s
-
+tri_huc8_intersection <- st_intersection(triCo, huc8_sf_utm)
+mapview(tri_huc8_intersection)
 
 ```
 

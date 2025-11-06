@@ -132,7 +132,8 @@ EPAair.sites <- EPAair %>%
     count_all = n(),                   #Adds a record count column
     count_Ozone = sum(!is.na(Ozone)),  #Counts the rows w/Ozone data
     count_PM25 = sum(!is.na(PM2.5))    #Counts the rows w/PM2.5 data
-    )
+    ) %>% 
+  ungroup()
 
 #Convert to a spatial dataframe
 EPAair.sf <- EPAair.sites %>% 
@@ -142,13 +143,15 @@ EPAair.sf <- EPAair.sites %>%
     )
 
 #Save locally as a shapefile 
-st_write(
-  EPAair.sf,
-  here("./Data/Processed/EPAair_sites.shp"),
-  driver='ESRI Shapefile'
-  )
+# st_write(
+#   EPAair.sf,
+#   here("./Data/Processed/EPAair_sites.shp"),
+#   driver='ESRI Shapefile'
+#   )
 
 #View the sf object using the methods above...
+# cex defines the size of the points based on column specified
+mapview(EPAair.sf, cex="mean_PM25")
 
 ```
 
@@ -197,7 +200,7 @@ Let's explore:
 the_buffer <- sf_GraingerHall %>% st_buffer(1)
 
 #View the result
-mapview(the_buffer)
+mapview(the_buffer) + mapview(sf_GraingerHall)
 ```
 
 A bit odd, no? Why is the circle so big? What is the units of '1'? And why is it oval, not a circle? This has much to do with the fact that the geometric units of our feature are measured in angular units (degrees) and not familiar planar ones (like meters or feet). And that's because latitude and longitude measure location on a sphere, and we like doing calculations on a plane...
