@@ -441,6 +441,9 @@ mapView(counties_sf[resultMask,])
 > Questions: how might we use the `st_buffer` function to show all counties within 30km of the site?
 
 ```{r Select counties within a 30 km area from the site}
+# create a buffer of 30 km and then use that buffer polygon to find intersect
+
+# buffer the point 30km
 
                             
 ```
