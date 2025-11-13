@@ -245,6 +245,7 @@ scrape.it <- function(the_year, the_facility){
   avg_withdrawals <- the_website %>% html_nodes(the_data_tag) %>% html_text()
   
   #Convert to a dataframe
+  # OR: "Month" = as.vector(rbind(1:6, 7:12))
   df_withdrawals <- data.frame("Month" = c(1,7,2,8,3,9,4,10,5,11,6,12), #<--NOTE: DIFFERENT THAN RECORDING!
                                "Year" = rep(the_year,12),
                                "Avg_Withdrawals_mgd" = as.numeric(avg_withdrawals)) %>% 
